@@ -70,7 +70,7 @@ Setup Instructions
 Clone this repository.
 bash
 Copy code
-git clone [https://github.com/your-repo/payload-generator.git](https://github.com/V-ex-e/PWN-SUITE-by-V.ex.e/)
+git clone https://github.com/V-ex-e/PWN-SUITE-by-V.ex.e/
 cd payload-generator
 
 Make the script executable.
