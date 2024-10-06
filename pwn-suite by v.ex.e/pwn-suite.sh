@@ -462,6 +462,7 @@ start_anonsurf() {
 
 
 
+
 # Function to generate Wi-Fi password sniffer with stealth mode
 generate_wifi_password_sniffer() {
     echo "Generating Wi-Fi password sniffer with stealth mode..."
@@ -559,8 +560,7 @@ while true; do
     echo "23) start metasploit_framework"
     echo "24) start airgeddon "
     echo "25) start wireshark "
-    echo "26) start msfvenom"
-    echo "27) DEAMON MANAGER by V.ex.e;; coming soon..."
+    echo "26) DEAMON MANAGER by V.ex.e;; coming soon..."
     echo "0) Exit"
     read -p "Enter your choice: " choice
 
@@ -590,7 +590,6 @@ while true; do
         23) display_kali_dragon; start_metasploit_framework ;;
         24) display_kali_dragon; start_airgeddon ;;
         25) display_kali_dragon; start_wireshark ;;
-	26) display_kali_dragon; start_msfvenom ;;
         0) display_kali_dragon; exit ;;
         *) echo "Invalid option!" ;;
     esac
