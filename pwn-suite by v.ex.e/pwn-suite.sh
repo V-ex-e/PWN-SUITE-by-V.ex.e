@@ -342,26 +342,71 @@ EOF
     echo "RAT server created: rat_server.py"
 }
 
-start_wireshark() {
-	echo"put wireshark in AutoStart? y/r  r = remove from AutoStart"
-	wireshark
-}
-
-
 start_airgeddon() {
-	airgeddon
-	echo"put airgeddon in AutoStart? y/r  r = remove from autostart"
+    echo "Put airgeddon in AutoStart? y/r (y = yes, r = remove from AutoStart)"
+    read air
+    if [ "$air" = "y" ]; then
+        # Command to add airgeddon to AutoStart (this is an example; modify as per your system)
+        echo "airgeddon" >> ~/.bashrc
+        echo "Added airgeddon to AutoStart."
+    elif [ "$air" = "r" ]; then
+        # Remove airgeddon from AutoStart
+        sed -i '/airgeddon/d' ~/.bashrc
+        echo "Removed airgeddon from AutoStart."
+    fi
+    airgeddon
 }
+
+start_wireshark() {
+    echo "Put wireshark in AutoStart? y/r (y = yes, r = remove from AutoStart)"
+    read wireshark_auto
+    if [ "$wireshark_auto" = "y" ]; then
+        echo "wireshark" >> ~/.bashrc
+        echo "Added wireshark to AutoStart."
+    elif [ "$wireshark_auto" = "r" ]; then
+        sed -i '/wireshark/d' ~/.bashrc
+        echo "Removed wireshark from AutoStart."
+    fi
+    wireshark
+}
+
 start_metasploit_framework() {
-	echo"put Metasploit in AutoStart? y/r  r = remove from autostart"
-	metasploit
+    echo "Put Metasploit in AutoStart? y/r (y = yes, r = remove from AutoStart)"
+    read metasploit_auto
+    if [ "$metasploit_auto" = "y" ]; then
+        echo "msfconsole" >> ~/.bashrc
+        echo "Added Metasploit to AutoStart."
+    elif [ "$metasploit_auto" = "r" ]; then
+        sed -i '/msfconsole/d' ~/.bashrc
+        echo "Removed Metasploit from AutoStart."
+    fi
+    msfconsole
 }
 
 
 start_anonsurf() {
-	echo"put anonsurf in AutoStart? y/r  r = remove from autostart"
-	anonsurf restart
-	anonsurf start 
+    # Check if anonsurf is installed
+    if ! command -v anonsurf &> /dev/null; then
+        echo "Anonsurf is not installed. Installing from GitHub..."
+        git clone https://github.com/Und3rf10w/kali-anonsurf.git
+        cd kali-anonsurf || exit
+        sudo ./installer.sh
+        cd ..
+        echo "Anonsurf installed successfully."
+    fi
+
+    echo "Put anonsurf in AutoStart? y/r (y = yes, r = remove from AutoStart)"
+    read anonsurf_auto
+    if [ "$anonsurf_auto" = "y" ]; then
+        echo "anonsurf start" >> ~/.bashrc
+        echo "Added anonsurf to AutoStart."
+    elif [ "$anonsurf_auto" = "r" ]; then
+        sed -i '/anonsurf start/d' ~/.bashrc
+        echo "Removed anonsurf from AutoStart."
+    fi
+
+    anonsurf restart
+    anonsurf start
 }
 
 
@@ -459,11 +504,11 @@ while true; do
     echo "19) Generate Wi-Fi password sniffer"
     echo "20) Generate simple SQL injection script"
     echo "21) Create credential harvester"
-    echo" 22) display_kali_dragon; start_anonsurf"
-    echo "23) display_kali_dragon; start_metasploit_framework"
-    echo "24) display_kali_dragon; start_airgeddon "
-    echo "25) display_kali_dragon; start_wireshark "
-    echo "25) display_kali_dragon; start_msfvenom"
+    echo "22) start anonsurf"
+    echo "23) start metasploit_framework"
+    echo "24) start airgeddon "
+    echo "25) start wireshark "
+    echo "25) start msfvenom"
     echo "0) Exit"
     read -p "Enter your choice: " choice
 
