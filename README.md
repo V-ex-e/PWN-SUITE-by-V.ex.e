@@ -7,10 +7,8 @@ view online = https://drive.google.com/file/d/15GVtdcF5nQoM3-4qVxpG9ggdorQwjL9u/
 
 view my full youtube = https://www.youtube.com/@lil_ToT-XFZ1/videos
 
-youll need dependencies
 
-
-Payload Generator - README
+./pwn-suite.sh - README
 This Bash script provides a variety of payload generation tools with advanced obfuscation techniques. It integrates multiple features such as reverse shells, keyloggers, and obfuscated DLL/EXE payloads, all designed to bypass detection mechanisms. Below is a list of the functionalities and the corresponding obfuscation techniques used.
 
 Features & Obfuscation Methods
@@ -74,12 +72,13 @@ bash
 Copy code
 git clone https://github.com/your-repo/payload-generator.git
 cd payload-generator
+
 Make the script executable.
 bash
 Copy code
-chmod +x payload_generator.sh
+chmod +x ./pwn-suite.sh
 Run the script.
 bash
 Copy code
-./payload_generator.sh
+./pwn-suite.sh
 Feel free to customize and expand the script to suit your needs!
