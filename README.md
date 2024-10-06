@@ -16,7 +16,7 @@ NOW WITH NEW OPTIONS
 
 ![new options](https://github.com/user-attachments/assets/1cd25316-550e-4820-8d22-6d03228a043f)
 
-![new options2](https://github.com/user-attachments/assets/0743f9c2-4d9a-499b-b405-35a90dd7eae9)
+![new options2](https://github.com/user-attachments/assets/90bc55ac-5eb3-4b51-bf0c-143dec1f6459)
 
 ![new options3](https://github.com/user-attachments/assets/90a39fba-db2e-4b3a-9008-3a83682abf98)
 
