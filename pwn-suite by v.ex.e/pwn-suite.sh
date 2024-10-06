@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 display_kali_dragon() {
     art=(
         "__________                                      .__  __"         
@@ -31,7 +30,7 @@ display_kali_dragon() {
         done
     done
 
-    # Echo each line in a different rainbow color from top to bottom
+    # Echo zeach line in a different rainbow color from top to bottom
     for index in "${!art[@]}"; do
         color=${colors[$((index % ${#colors[@]}))]}
         echo -e "\033[${color}m${art[index]}\033[0m"
@@ -40,7 +39,8 @@ display_kali_dragon() {
 
 # Function to check dependencies
 check_dependencies() {
-    local dependencies=(gcc mingw-w64 msfvenom wireshark metasploit airgeddon )
+    local dependencies=(gcc mingw-w64 msfvenom wireshark metasploit airgeddon)
+    
     for dep in "${dependencies[@]}"; do
         if ! command -v "$dep" &> /dev/null; then
             echo "$dep is not installed."
@@ -48,17 +48,22 @@ check_dependencies() {
             if [[ $choice == [Yy]* ]]; then
                 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
                     sudo apt-get install -y "$dep"
+                    echo "$dep has been installed."
                 elif [[ "$OSTYPE" == "darwin"* ]]; then
                     brew install "$dep"
+                    echo "$dep has been installed."
                 else
                     echo "Unsupported OS for installing $dep."
                 fi
+            else
+                echo "Skipping installation of $dep."
             fi
         else
-            echo "$dep is installed."
+            echo "$dep is already installed."
         fi
     done
 }
+
 
 
 # Call the functions at the start of the script
@@ -342,49 +347,89 @@ EOF
     echo "RAT server created: rat_server.py"
 }
 
+check_sysctl_conf() {
+    if [ ! -f /etc/sysctl.conf ]; then
+        echo "/etc/sysctl.conf does not exist. Would you like to create it? (y/n)"
+        read create_conf
+        if [ "$create_conf" = "y" ]; then
+            sudo touch /etc/sysctl.conf
+            echo "Created /etc/sysctl.conf."
+            echo "Please add necessary configurations to it before proceeding."
+            exit 1
+        else
+            echo "Exiting. Please create /etc/sysctl.conf manually to proceed."
+            exit 1
+        fi
+    fi
+}
+
 start_airgeddon() {
+    check_sysctl_conf
     echo "Put airgeddon in AutoStart? y/r (y = yes, r = remove from AutoStart)"
+    echo "Press Enter to start airgeddon..."
     read air
     if [ "$air" = "y" ]; then
-        # Command to add airgeddon to AutoStart (this is an example; modify as per your system)
-        echo "airgeddon" >> ~/.bashrc
+        sudo sh -c 'echo "airgeddon" >> ~/.bashrc'
         echo "Added airgeddon to AutoStart."
+        echo "__________              ___.           "
+        echo "\\______   \\ ____   _____\\_ |__   ______"
+        echo " |    |  _//  _ \\ /     \\| __ \\ /  ___/"
+        echo " |    |   (  <_> )  Y Y  \\ \\_\\ \\\\___ \\ "
+        echo " |______  /\\____/|__|_|  /___  /____  > "
+        echo "        \\/             \\/    \\/     \\/  "
     elif [ "$air" = "r" ]; then
-        # Remove airgeddon from AutoStart
-        sed -i '/airgeddon/d' ~/.bashrc
+        sudo sed -i '/airgeddon/d' ~/.bashrc
         echo "Removed airgeddon from AutoStart."
     fi
+
     airgeddon
 }
 
 start_wireshark() {
+    check_sysctl_conf
     echo "Put wireshark in AutoStart? y/r (y = yes, r = remove from AutoStart)"
+    echo "Press Enter to start wireshark..."
     read wireshark_auto
     if [ "$wireshark_auto" = "y" ]; then
-        echo "wireshark" >> ~/.bashrc
+        sudo sh -c 'echo "wireshark" >> ~/.bashrc'
         echo "Added wireshark to AutoStart."
+        echo "__________              ___.           "
+        echo "\\______   \\ ____   _____\\_ |__   ______"
+        echo " |    |  _//  _ \\ /     \\| __ \\ /  ___/"
+        echo " |    |   (  <_> )  Y Y  \\ \\_\\ \\\\___ \\ "
+        echo " |______  /\\____/|__|_|  /___  /____  > "
+        echo "        \\/             \\/    \\/     \\/  "
     elif [ "$wireshark_auto" = "r" ]; then
-        sed -i '/wireshark/d' ~/.bashrc
+        sudo sed -i '/wireshark/d' ~/.bashrc
         echo "Removed wireshark from AutoStart."
     fi
-    wireshark
+    sudo wireshark
 }
 
 start_metasploit_framework() {
+    check_sysctl_conf
     echo "Put Metasploit in AutoStart? y/r (y = yes, r = remove from AutoStart)"
+    echo "Press Enter to start Metasploit Framework..."
     read metasploit_auto
     if [ "$metasploit_auto" = "y" ]; then
-        echo "msfconsole" >> ~/.bashrc
+        sudo sh -c 'echo "msfconsole" >> ~/.bashrc'
         echo "Added Metasploit to AutoStart."
+        echo "__________              ___.           "
+        echo "\\______   \\ ____   _____\\_ |__   ______"
+        echo " |    |  _//  _ \\ /     \\| __ \\ /  ___/"
+        echo " |    |   (  <_> )  Y Y  \\ \\_\\ \\\\___ \\ "
+        echo " |______  /\\____/|__|_|  /___  /____  > "
+        echo "        \\/             \\/    \\/     \\/  "
     elif [ "$metasploit_auto" = "r" ]; then
-        sed -i '/msfconsole/d' ~/.bashrc
+        sudo sed -i '/msfconsole/d' ~/.bashrc
         echo "Removed Metasploit from AutoStart."
     fi
-    msfconsole
+
+    sudo msfconsole
 }
 
-
 start_anonsurf() {
+    check_sysctl_conf
     # Check if anonsurf is installed
     if ! command -v anonsurf &> /dev/null; then
         echo "Anonsurf is not installed. Installing from GitHub..."
@@ -396,17 +441,23 @@ start_anonsurf() {
     fi
 
     echo "Put anonsurf in AutoStart? y/r (y = yes, r = remove from AutoStart)"
+    echo "Press Enter to start Anonsurf..."
     read anonsurf_auto
     if [ "$anonsurf_auto" = "y" ]; then
-        echo "anonsurf start" >> ~/.bashrc
+        sudo sh -c 'echo "anonsurf start" >> ~/.bashrc'
         echo "Added anonsurf to AutoStart."
+        echo ".___ ___________   ____.___  _________._____________.____     ___________"
+        echo "|   |\\      \\   \\ /   /|   |/   _____/|   \\______   \\    |    \\_   _____/"
+        echo "|   |/   |   \\   Y   / |   |\\_____  \\ |   ||    |  _/    |     |    __)_ "
+        echo "|   /    |    \\     /  |   |/        \\|   ||    |   \\    |___  |        \\"
+        echo "|___\\____|__  /\\___/   |___/_______  /|___||______  /_______ \\/_______  /"
+        echo "            \\/                     \\/             \\/        \\/        \\/ "
     elif [ "$anonsurf_auto" = "r" ]; then
-        sed -i '/anonsurf start/d' ~/.bashrc
+        sudo sed -i '/anonsurf start/d' ~/.bashrc
         echo "Removed anonsurf from AutoStart."
     fi
-
-    anonsurf restart
-    anonsurf start
+    sudo anonsurf restart
+    sudo anonsurf start
 }
 
 
@@ -509,6 +560,7 @@ while true; do
     echo "24) start airgeddon "
     echo "25) start wireshark "
     echo "26) start msfvenom"
+    echo "27) DEAMON MANAGER by V.ex.e;; coming soon..."
     echo "0) Exit"
     read -p "Enter your choice: " choice
 
@@ -538,8 +590,7 @@ while true; do
         23) display_kali_dragon; start_metasploit_framework ;;
         24) display_kali_dragon; start_airgeddon ;;
         25) display_kali_dragon; start_wireshark ;;
-	25) display_kali_dragon; start_msfvenom ;;
-	
+	26) display_kali_dragon; start_msfvenom ;;
         0) display_kali_dragon; exit ;;
         *) echo "Invalid option!" ;;
     esac
