@@ -5,12 +5,20 @@ Full Version >>>>> v1.2 10/05/2024 = in Directory >>>>> "pwn-suite"
 ![pwn](https://github.com/user-attachments/assets/85bd6181-07cb-4614-b08a-bf6a14961205)
 
 
-
 view in safety = https://www.youtube.com/watch?v=--srcJ9uV_U
 
 view online = https://drive.google.com/file/d/15GVtdcF5nQoM3-4qVxpG9ggdorQwjL9u/view?usp=sharing
 
 view my full youtube = https://www.youtube.com/@lil_ToT-XFZ1/videos
+
+
+NOW WITH NEW OPTIONS 
+
+![new options](https://github.com/user-attachments/assets/1cd25316-550e-4820-8d22-6d03228a043f)
+
+![new options2](https://github.com/user-attachments/assets/0743f9c2-4d9a-499b-b405-35a90dd7eae9)
+
+![new options3](https://github.com/user-attachments/assets/90a39fba-db2e-4b3a-9008-3a83682abf98)
 
 
 
