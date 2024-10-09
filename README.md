@@ -11,9 +11,8 @@ Update v1.3 10/9/2024
     echo "23) Start metasploit_framework"
     echo "24) Start airgeddon "
     echo "25) Start wireshark "
-    echo "26) Start deamon manager"
+    echo "26) DEAMON MANAGER by V.ex.e"
     echo "27) Start listening for zombies"
-    echo "26) DEAMON MANAGER by V.ex.e;; coming soon..."
   
 - new trojan
    XOR Encryption:
