@@ -3,8 +3,34 @@ Payload-creation-tool-
 Update v1.3 10/9/2024
 
 - new trojan
+   XOR Encryption:
+
+    The script employs a simple XOR encryption method to obfuscate the IP address and port in the payload, making it less readable in the compiled executable.
+    Dynamic Input Handling:
+  
+    :User-supplied IP and port values are dynamically integrated into the payload, which avoids hardcoding sensitive information.
+    Payload Packing:
+  
+    The use of UPX (if available) to pack the trojan executable further reduces its size and makes static analysis more challenging.
+
 - deamon manager
+    Anonymous SSH Server Setup:
+  
+    The script installs and configures SSH on a specified port (default is 2222) and creates a non-root user for secure access.
+    It configures Tor to route traffic anonymously, ensuring enhanced privacy.
+    Connection Management:
+    
+    It allows users to listen for incoming SSH connections using netcat.
+    The script maintains a dynamic array of connected clients, enabling the user to:
+    View connected clients.
+    Send commands to specific clients.
+    Disconnect clients.
+    Add new clients dynamically by inputting their addresses.
+
+
 - listenr
+    simple ncat listener
+    listens for defined or cached LHost and Target Port Host
 
 
 Full Version >>>>> v1.2 10/05/2024 = in Directory >>>>> "pwn-suite"
