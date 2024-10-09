@@ -3,16 +3,16 @@ Payload-creation-tool-
 Update v1.3 10/9/2024
 
 - whole array of new funcitonality
-    echo "18) Create RAT"
-    echo "19) Generate Wi-Fi password sniffer"
-    echo "20) Generate simple SQL injection script"
-    echo "21) Create credential harvester"
-    echo "22) Start anonsurf"
-    echo "23) Start metasploit_framework"
-    echo "24) Start airgeddon "
-    echo "25) Start wireshark "
-    echo "26) DEAMON MANAGER by V.ex.e"
-    echo "27) Start listening for zombies"
+echo "18) Create RAT"
+echo "19) Generate Wi-Fi password sniffer"
+echo "20) Generate simple SQL injection script"
+echo "21) Create credential harvester"
+echo "22) Start anonsurf"
+echo "23) Start metasploit_framework"
+echo "24) Start airgeddon "
+echo "25) Start wireshark "
+echo "26) DEAMON MANAGER by V.ex.e"
+echo "27) Start listening for zombies"
   
 - new trojan
    XOR Encryption:
