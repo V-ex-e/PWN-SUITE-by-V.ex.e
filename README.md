@@ -1,4 +1,12 @@
 Payload-creation-tool-
+
+Update v1.3 10/9/2024
+
+- new trojan
+- deamon manager
+- listenr
+
+
 Full Version >>>>> v1.2 10/05/2024 = in Directory >>>>> "pwn-suite"
 
 
