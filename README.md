@@ -2,6 +2,19 @@ Payload-creation-tool-
 
 Update v1.3 10/9/2024
 
+- whole array of new funcitonality
+    echo "18) Create RAT"
+    echo "19) Generate Wi-Fi password sniffer"
+    echo "20) Generate simple SQL injection script"
+    echo "21) Create credential harvester"
+    echo "22) Start anonsurf"
+    echo "23) Start metasploit_framework"
+    echo "24) Start airgeddon "
+    echo "25) Start wireshark "
+    echo "26) Start deamon manager"
+    echo "27) Start listening for zombies"
+    echo "26) DEAMON MANAGER by V.ex.e;; coming soon..."
+  
 - new trojan
    XOR Encryption:
 
@@ -87,28 +100,29 @@ Obfuscation: Keystrokes are encoded using Base64 before being logged for minimal
 9. Trojan Executable with Obfuscation
 Function: generate_trojan_executable()
 Obfuscation: Simple wrapper around a benign executable to hide the payload.
-10. Phishing Page with Embedded JavaScript
+Updated v1.3 = Full wrapper around a benign executable to hide the payload. Fully obfuscated Payload generation and wrapping around custom EXE
+11. Phishing Page with Embedded JavaScript
 Function: create_phishing_page()
 Obfuscation: The phishing page dynamically redirects users to a malicious URL after credentials are captured.
-11. Windows Service Payload with Encrypted Storage
+12. Windows Service Payload with Encrypted Storage
 Function: generate_windows_service_payload()
 Obfuscation: Windows service created with AES-256 encrypted payload storage.
-12. USB Exploitation Payload with Autorun
+13. USB Exploitation Payload with Autorun
 Function: create_usb_exploitation_payload()
 Obfuscation: Embedded autorun functionality for automatic execution from USB.
-13. Reverse HTTPS Payload with Obfuscation
+14. Reverse HTTPS Payload with Obfuscation
 Function: generate_reverse_https_payload()
 Obfuscation: Payload obfuscated via Base64 encoding and HTTPS communication.
-14. Persistence via Windows Registry
+15. Persistence via Windows Registry
 Function: create_persistence_payload()
 Obfuscation: Payload persistence achieved through Windows Registry modification.
-15. Fake Update Payload
+16. Fake Update Payload
 Function: generate_fake_update_payload()
 Obfuscation: Simulated system update, meant to distract the user while malicious actions are performed.
-16. Process Injection Payload
+17. Process Injection Payload
 Function: create_process_injection_payload()
 Obfuscation: Injects a DLL into a target process with manual error handling for stealth.
-17. Stealthy Network Scanning Payload
+18. Stealthy Network Scanning Payload
 Function: generate_network_scanning_payload()
 Obfuscation: Uses nmap stealth scanning to avoid detection while scanning the network.
 Additional Notes
