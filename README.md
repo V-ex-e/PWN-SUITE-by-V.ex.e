@@ -2,6 +2,21 @@ Payload-creation-tool-
 
 Update v1.4 10/9/2024
 
+view in safety = https://www.youtube.com/watch?v=--srcJ9uV_U
+
+view online = https://drive.google.com/file/d/15GVtdcF5nQoM3-4qVxpG9ggdorQwjL9u/view?usp=sharing
+
+view my full youtube = https://www.youtube.com/@lil_ToT-XFZ1/videos
+
+
+NOW WITH NEW OPTIONS 
+
+![new options](https://github.com/user-attachments/assets/1cd25316-550e-4820-8d22-6d03228a043f)
+
+![new options2](https://github.com/user-attachments/assets/90bc55ac-5eb3-4b51-bf0c-143dec1f6459)
+
+![new options3](https://github.com/user-attachments/assets/90a39fba-db2e-4b3a-9008-3a83682abf98)
+
 
 
 ![nEw feature](https://github.com/user-attachments/assets/db4ac148-6aa7-4154-b25a-47783df02af6)
@@ -59,21 +74,6 @@ Full Version >>>>> v1.2 10/05/2024 = in Directory >>>>> "pwn-suite"
 
 ![pwn](https://github.com/user-attachments/assets/85bd6181-07cb-4614-b08a-bf6a14961205)
 
-
-view in safety = https://www.youtube.com/watch?v=--srcJ9uV_U
-
-view online = https://drive.google.com/file/d/15GVtdcF5nQoM3-4qVxpG9ggdorQwjL9u/view?usp=sharing
-
-view my full youtube = https://www.youtube.com/@lil_ToT-XFZ1/videos
-
-
-NOW WITH NEW OPTIONS 
-
-![new options](https://github.com/user-attachments/assets/1cd25316-550e-4820-8d22-6d03228a043f)
-
-![new options2](https://github.com/user-attachments/assets/90bc55ac-5eb3-4b51-bf0c-143dec1f6459)
-
-![new options3](https://github.com/user-attachments/assets/90a39fba-db2e-4b3a-9008-3a83682abf98)
 
 
 
