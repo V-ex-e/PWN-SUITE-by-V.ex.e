@@ -149,16 +149,16 @@ Copy code
 git clone https://github.com/V-ex-e/PWN-SUITE-by-V.ex.e/
 cd payload-generator
 
-Make the script executable.
-bash
-Copy code
+**Make the script executable.**
+```ruby
+##IN THE FILES's FODLERS's TERMINAL
 chmod +x ./pwn-suite.sh
-Run the script.
-bash
-Copy code
 ./pwn-suite.sh
-Feel free to customize and expand the script to suit your needs!
-You can add text within a collapsed section.
+
+##Feel free to customize and expand the script to suit your needs!
+##You can add text within a collapsed section.
+
+```
 
 
 </details>
