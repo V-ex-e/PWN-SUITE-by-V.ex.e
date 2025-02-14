@@ -9,6 +9,8 @@
 view my full youtube = https://www.youtube.com/@lil_ToT-XFZ1/videos
 
 
+
+
 NOW WITH NEW OPTIONS 
 
 <ins>![new options](https://github.com/user-attachments/assets/1cd25316-550e-4820-8d22-6d03228a043f)</ins>
@@ -22,10 +24,35 @@ NOW WITH NEW OPTIONS
 ![nEw feature](https://github.com/user-attachments/assets/db4ac148-6aa7-4154-b25a-47783df02af6)
 
 
+<details>
+
+<summary>Tips for collapsed sections</summary>
+
+### How to start the script
+
+```ruby
+##IN THE BASH TERMINAL WITHIN THE SCRIPTS FOLDER
+chmod +x ./pwn-suite.sh
+###TO RUN THE SCRIPT
+bash
+Copy code
+./pwn-suite.sh
+
+## Feel free to customize and expand the script to suit your needs!
+You can add text within a collapsed section.
+
+##to write in it
+nano pwn-suite.sh
+##or use following to view into it
+cat pwn-suite.sh
+```
+
+</details>
 
 <ins>**Update v1.3 10/9/2024**</ins>
 
 - whole array of new funcitonality
+```ruby
 echo "18) Create RAT"
 echo "19) Generate Wi-Fi password sniffer"
 echo "20) Generate simple SQL injection script"
@@ -36,6 +63,7 @@ echo "24) Start airgeddon "
 echo "25) Start wireshark "
 echo "26) DEAMON MANAGER by V.ex.e"
 echo "27) Start listening for zombies"
+```
   
 **- new trojan**
     FULL WRAPPER FOR CUSTOM EXEs
@@ -158,11 +186,6 @@ Copy code
 Feel free to customize and expand the script to suit your needs!
 You can add text within a collapsed section.
 
-You can add an image or a code block, too.
-
-```ruby
-   puts "Hello World"
-```
 
 </details>
 
