@@ -99,14 +99,9 @@ echo "27) Start listening for zombies"
 
 Full Version >>>>> v1.2 10/05/2024 = in Directory >>>>> "pwn-suite"
 
-
-![pwn](https://github.com/user-attachments/assets/85bd6181-07cb-4614-b08a-bf6a14961205)
-
-
-
 <details>
 
-<summary>Tips for collapsed sections</summary>
+<summary Full feature list <3 </summary>
 
 ### Option description
 ./pwn-suite.sh - README
@@ -188,4 +183,10 @@ You can add text within a collapsed section.
 
 
 </details>
+
+![pwn](https://github.com/user-attachments/assets/85bd6181-07cb-4614-b08a-bf6a14961205)
+
+
+
+
 
