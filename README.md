@@ -8,21 +8,9 @@
 
 view my full youtube = https://www.youtube.com/@lil_ToT-XFZ1/videos
 
-
-
-
 NOW WITH NEW OPTIONS 
 
 <ins>![new options](https://github.com/user-attachments/assets/1cd25316-550e-4820-8d22-6d03228a043f)</ins>
-
-<ins>![new options2](https://github.com/user-attachments/assets/90bc55ac-5eb3-4b51-bf0c-143dec1f6459)</ins>
-
-<ins>![new options3](https://github.com/user-attachments/assets/90a39fba-db2e-4b3a-9008-3a83682abf98)</ins>
-
-
-
-![nEw feature](https://github.com/user-attachments/assets/db4ac148-6aa7-4154-b25a-47783df02af6)
-
 
 <details>
 
@@ -64,7 +52,6 @@ echo "25) Start wireshark "
 echo "26) DEAMON MANAGER by V.ex.e"
 echo "27) Start listening for zombies"
 ```
-  
 **- new trojan**
     FULL WRAPPER FOR CUSTOM EXEs
    XOR Encryption:
@@ -76,7 +63,6 @@ echo "27) Start listening for zombies"
     Payload Packing:
   
     The use of UPX (if available) to pack the trojan executable further reduces its size and makes static analysis more challenging.
-
 **- deamon manager**
     Anonymous SSH Server Setup:
   
@@ -91,14 +77,7 @@ echo "27) Start listening for zombies"
     Disconnect clients.
     Add new clients dynamically by inputting their addresses.
 
-
-**- listenr**
-    simple ncat listener
-    listens for defined or cached LHost and Target Port Host
-
-
-Full Version >>>>> v1.2 10/05/2024 = in Directory >>>>> "pwn-suite"
-
+<ins>![new options2](https://github.com/user-attachments/assets/90bc55ac-5eb3-4b51-bf0c-143dec1f6459)</ins>
 <details>
 
 <summary Full feature list <3 </summary>
@@ -183,6 +162,13 @@ You can add text within a collapsed section.
 
 
 </details>
+<ins>![new options3](https://github.com/user-attachments/assets/90a39fba-db2e-4b3a-9008-3a83682abf98)</ins>
+
+**- listenr**
+    simple ncat listener
+    listens for defined or cached LHost and Target Port Host
+
+First Build  >>>>> v1.2 10/05/2024 = in Directory >>>>> "pwn-suite"
 
 ![pwn](https://github.com/user-attachments/assets/85bd6181-07cb-4614-b08a-bf6a14961205)
 
