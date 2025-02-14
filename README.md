@@ -2,9 +2,9 @@
 **</ins>
 <sup>Update v1.4 10/9/2024</sup>
 
-<ins><sup> view in safety = https://www.youtube.com/watch?v=--srcJ9uV_U </sup></ins>
+<sup> view in safety = https://www.youtube.com/watch?v=--srcJ9uV_U </sup>
 
-<ins> view online = https://drive.google.com/file/d/15GVtdcF5nQoM3-4qVxpG9ggdorQwjL9u/view?usp=sharing </ins>
+ view online = https://drive.google.com/file/d/15GVtdcF5nQoM3-4qVxpG9ggdorQwjL9u/view?usp=sharing 
 
 view my full youtube = https://www.youtube.com/@lil_ToT-XFZ1/videos
 
@@ -23,7 +23,7 @@ NOW WITH NEW OPTIONS
 
 
 
-Update v1.3 10/9/2024
+<ins>**Update v1.3 10/9/2024**</ins>
 
 - whole array of new funcitonality
 echo "18) Create RAT"
@@ -37,7 +37,7 @@ echo "25) Start wireshark "
 echo "26) DEAMON MANAGER by V.ex.e"
 echo "27) Start listening for zombies"
   
-- new trojan
+**- new trojan**
     FULL WRAPPER FOR CUSTOM EXEs
    XOR Encryption:
 
@@ -49,7 +49,7 @@ echo "27) Start listening for zombies"
   
     The use of UPX (if available) to pack the trojan executable further reduces its size and makes static analysis more challenging.
 
-- deamon manager
+**- deamon manager**
     Anonymous SSH Server Setup:
   
     The script installs and configures SSH on a specified port (default is 2222) and creates a non-root user for secure access.
@@ -64,7 +64,7 @@ echo "27) Start listening for zombies"
     Add new clients dynamically by inputting their addresses.
 
 
-- listenr
+**- listenr**
     simple ncat listener
     listens for defined or cached LHost and Target Port Host
 
@@ -76,7 +76,11 @@ Full Version >>>>> v1.2 10/05/2024 = in Directory >>>>> "pwn-suite"
 
 
 
+<details>
 
+<summary>Tips for collapsed sections</summary>
+
+### Option description
 ./pwn-suite.sh - README
 This Bash script provides a variety of payload generation tools with advanced obfuscation techniques. It integrates multiple features such as reverse shells, keyloggers, and obfuscated DLL/EXE payloads, all designed to bypass detection mechanisms. Below is a list of the functionalities and the corresponding obfuscation techniques used.
 
@@ -152,3 +156,13 @@ bash
 Copy code
 ./pwn-suite.sh
 Feel free to customize and expand the script to suit your needs!
+You can add text within a collapsed section.
+
+You can add an image or a code block, too.
+
+```ruby
+   puts "Hello World"
+```
+
+</details>
+
